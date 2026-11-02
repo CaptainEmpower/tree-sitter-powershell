@@ -118,13 +118,18 @@ Windows modules that fail to parse).
    the colon parameter's argument). Now `--name=` is the generic-token form
    (inert ASCII, quoted parts, and no `,`, which ends a generic token:
    `--x=a,@y` no longer hides `@y`), and `-name=` is only the parameter
-   form; a one-dash value takes no quoted part, so `-Command="..."` is no
-   single leaf. `cmd -x=a:$y` now parses as PowerShell reads it: the
+   form, up to its first quote. Once `ScanParameter` reaches a quote it goes
+   on as a generic token, so `-name=` + a quoted part continues with the
+   `--name=` value (`terraform plan -var='region=us'`, `java -Dprop="value"`
+   stay one leaf); the part before the quote takes no `$`, and
+   `-x="$y"`, `-x='a':$y` and `-x=$y'a'` parse with an error. `cmd -x=a:$y` now parses as PowerShell reads it: the
    parameter `-x=a:` and the variable as its argument. Upstream's
    `-+name` alternative is split the same way: a backtick, literal in a
    one-dash parameter, is an escape in a two-dash word (a generic token),
-   so only a one-dash name takes one (`git --a`n` no longer parses as one
-   clean parameter).
+   so only a one-dash name takes one, and never right after the dash
+   (`-`n` is a generic word with an escape; `ScanParameter` needs a letter,
+   `_` or `?` first). `git --a`n` and `cmd -`n` no longer parse as one
+   clean parameter.
    `--format=%H`, `--pretty='format:%B'` and `--pretty=format:"%h %s"`
    are unchanged. Tested by `test/corpus/semcode_patches.txt` and by
    `attached_value_tests.rs` in semcode's

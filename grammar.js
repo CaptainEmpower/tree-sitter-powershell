@@ -338,8 +338,10 @@ export default grammar({
             // (semcode patch: attached values stay literal) A backtick is
             // literal in a one-dash parameter (tokenizer ScanParameter) but an
             // escape in a two-dash word, which PowerShell scans as a generic
-            // token; so only a one-dash name takes one.
-            /-[a-zA-Z_?`][a-zA-Z0-9_?\-`]*/,
+            // token; so only a one-dash name takes one, and not right after
+            // the dash (`-`n` is a generic word with an escape, not a
+            // parameter: ScanParameter needs a letter, `_` or `?` first).
+            /-[a-zA-Z_?][a-zA-Z0-9_?\-`]*/,
             /--+[a-zA-Z_?][a-zA-Z0-9_?\-]*/,
             // `--format=%H`, `--pretty=format:"%B"`: a native option with an attached value
             // (semcode patch: attached values stay literal) PowerShell scans a
@@ -364,9 +366,16 @@ export default grammar({
             // parameter's evaluated argument, `-x=a:@y` splats `$y`); a quote,
             // the Unicode ones included, makes the whole word an expandable
             // argument. So the value is the allow-list of inert ASCII, with
-            // `$` and without `,` `.` `[` `:`, and a one-dash value never takes
-            // a quoted part: the quoted string is an argument of its own.
+            // `$` and without `,` `.` `[` `:`.
             /-[a-zA-Z_][a-zA-Z0-9_\-]*=[!#$%*+\-/0-9<=>?@A-Z\\\]^_a-z~]*/,
+            // `-var='k=v'`, `-Dk="v"`: once ScanParameter reaches a quote it
+            // goes on as a generic token, so after the first quoted part the
+            // value is the `--name=` value (`:` `.` `[` no longer end it, `,`
+            // does). The part before the quote takes no `$`, and a quoted part
+            // nothing that expands. (One regular expression so the token
+            // keeps a single longest match; split, it would read worse.)
+            // eslint-disable-next-line max-len
+            /-[a-zA-Z_][a-zA-Z0-9_\-]*=[!#%*+\-/0-9<=>?@A-Z\\\]^_a-z~]*("[^"\u201C-\u201E$`\r\n]*"|'[^'\u2018-\u201B\r\n]*')([!#%*+\-./0-9:<=>?@A-Z\[\\\]^_a-z~]|"[^"\u201C-\u201E$`\r\n]*"|'[^'\u2018-\u201B\r\n]*')*/,
           ),
         ),
         // A bare `--` or `-` argument (see scanner.c).

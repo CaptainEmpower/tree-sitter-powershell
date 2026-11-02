@@ -643,6 +643,54 @@ git -x=a:@y
                 (variable)))))))))
 
 ================================================================================
+A one-dash value with literal quoted parts is one parameter (semcode)
+================================================================================
+
+terraform plan -var='region=us'
+java -Dprop="value"
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          command_name: (command_name)
+          command_elements: (command_elements
+            (command_argument_sep)
+            (generic_token)
+            (command_argument_sep)
+            (command_parameter)))))
+    (pipeline
+      (pipeline_chain
+        (command
+          command_name: (command_name)
+          command_elements: (command_elements
+            (command_argument_sep)
+            (command_parameter)))))))
+
+================================================================================
+A one-dash value that expands after its quote is no clean parameter (semcode)
+:error
+================================================================================
+
+cmd -x="$y"
+cmd -x='a':$y
+cmd -x=$y'a'
+
+--------------------------------------------------------------------------------
+
+================================================================================
+A backtick right after one dash is no clean parameter (semcode)
+:error
+================================================================================
+
+cmd -`n
+
+--------------------------------------------------------------------------------
+
+================================================================================
 A backtick escape in a two-dash word is no clean parameter (semcode)
 :error
 ================================================================================
