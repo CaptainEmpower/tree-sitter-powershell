@@ -346,7 +346,12 @@ export default grammar({
             /--?[a-zA-Z_][a-zA-Z0-9_\-]*=([^\s"'`$;|&(){}]|"[^"$`\r\n]*"|'[^'\r\n]*')*/,
             // `-x=$y`: one dash and no quote is a parameter token in
             // PowerShell (tokenizer ScanParameter), `$` included, never expanded.
-            /-[a-zA-Z_][a-zA-Z0-9_\-]*=[^\s"'`;|&(){}]*/,
+            // ScanParameter also ends the parameter at `,` `.` `[` (what follows
+            // is a new, expanding argument) and at `:` (what follows is the
+            // parameter's evaluated argument); any quote, the Unicode ones
+            // U+2018-U+201E included, makes the whole word an expandable
+            // argument. None of those is part of this token.
+            /-[a-zA-Z_][a-zA-Z0-9_\-]*=[^\s"'`;|&(){},.\[:‘-„]*/,
           ),
         ),
         // A bare `--` or `-` argument (see scanner.c).
