@@ -112,6 +112,19 @@ Windows modules that fail to parse).
    non-ASCII character outside quotes (`--title=café`) now parses with an
    error, which a consumer reports as unparsed; none of the 309 Ansible
    modules semcode measures changes its tree.
+   The two forms are kept apart by dash count. Upstream's `--?name=`
+   alternative also matched one dash, and since a token takes its longest
+   match it ran a one-dash value past `:` (`-x=a:@y`, which splats `$y` as
+   the colon parameter's argument). Now `--name=` is the generic-token form
+   (inert ASCII, quoted parts, and no `,`, which ends a generic token:
+   `--x=a,@y` no longer hides `@y`), and `-name=` is only the parameter
+   form; a one-dash value takes no quoted part, so `-Command="..."` is no
+   single leaf. `cmd -x=a:$y` now parses as PowerShell reads it: the
+   parameter `-x=a:` and the variable as its argument. Upstream's
+   `-+name` alternative is split the same way: a backtick, literal in a
+   one-dash parameter, is an escape in a two-dash word (a generic token),
+   so only a one-dash name takes one (`git --a`n` no longer parses as one
+   clean parameter).
    `--format=%H`, `--pretty='format:%B'` and `--pretty=format:"%h %s"`
    are unchanged. Tested by `test/corpus/semcode_patches.txt` and by
    `attached_value_tests.rs` in semcode's

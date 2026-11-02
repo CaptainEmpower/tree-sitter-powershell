@@ -335,29 +335,37 @@ export default grammar({
         token(
           choice(
             // `-Name`, `-Name1`, `--long-flag`, `-A5`
-            /-+[a-zA-Z_?\-`][a-zA-Z0-9_?\-`]*/,
+            // (semcode patch: attached values stay literal) A backtick is
+            // literal in a one-dash parameter (tokenizer ScanParameter) but an
+            // escape in a two-dash word, which PowerShell scans as a generic
+            // token; so only a one-dash name takes one.
+            /-[a-zA-Z_?`][a-zA-Z0-9_?\-`]*/,
+            /--+[a-zA-Z_?][a-zA-Z0-9_?\-]*/,
             // `--format=%H`, `--pretty=format:"%B"`: a native option with an attached value
-            // (semcode patch: attached values stay literal) PowerShell expands
-            // `$x`, `${x}`, `$(...)` and backtick escapes in such an argument
-            // (in a double-quoted part too), so the value takes only text that
-            // cannot expand. An expanding form is no single leaf: the name and
-            // `=` lex here and what follows parses as an argument of its own
-            // (or as an error), with its variables visible.
+            // (semcode patch: attached values stay literal) PowerShell scans a
+            // two-dash word as a generic token: it expands `$x`, `${x}`, `$(...)`
+            // and backtick escapes (in a double-quoted part too), and a `,`
+            // ends it. So the value takes only text that cannot expand. An
+            // expanding form is no single leaf: the name and `=` lex here and
+            // what follows parses as an argument of its own (or as an error),
+            // with its variables visible.
             // The unquoted characters are an allow-list of inert printable
             // ASCII: PowerShell also reads the Unicode blanks (NBSP, NEL,
             // U+2000-U+200A, U+2028, U+3000, ...) as whitespace and the
             // Unicode quotes as quotes, and a deny-list misses some. A quoted
             // part ends at any quote PowerShell closes it with (U+2018-U+201B
             // for single, U+201C-U+201E for double quotes).
-            /--?[a-zA-Z_][a-zA-Z0-9_\-]*=([!#%*+,\-./0-9:<=>?@A-Z\[\\\]^_a-z~]|"[^"\u201C-\u201E$`\r\n]*"|'[^'\u2018-\u201B\r\n]*')*/,
+            /--[a-zA-Z_][a-zA-Z0-9_\-]*=([!#%*+\-./0-9:<=>?@A-Z\[\\\]^_a-z~]|"[^"\u201C-\u201E$`\r\n]*"|'[^'\u2018-\u201B\r\n]*')*/,
             // `-x=$y`: one dash and no quote is a parameter token in
-            // PowerShell (tokenizer ScanParameter), `$` included, never expanded.
-            // ScanParameter also ends the parameter at whitespace (the Unicode
-            // blanks included), at `,` `.` `[` (what follows is a new,
-            // expanding argument) and at `:` (what follows is the parameter's
-            // evaluated argument); any quote, the Unicode ones included, makes
-            // the whole word an expandable argument. So the value is the same
-            // allow-list of inert ASCII, with `$` and without `,` `.` `[` `:`.
+            // PowerShell (tokenizer ScanParameter), `$` and `@` included,
+            // never expanded. ScanParameter ends the parameter at whitespace
+            // (the Unicode blanks included), at `,` `.` `[` (what follows is a
+            // new, expanding argument) and at `:` (what follows is the
+            // parameter's evaluated argument, `-x=a:@y` splats `$y`); a quote,
+            // the Unicode ones included, makes the whole word an expandable
+            // argument. So the value is the allow-list of inert ASCII, with
+            // `$` and without `,` `.` `[` `:`, and a one-dash value never takes
+            // a quoted part: the quoted string is an argument of its own.
             /-[a-zA-Z_][a-zA-Z0-9_\-]*=[!#$%*+\-/0-9<=>?@A-Z\\\]^_a-z~]*/,
           ),
         ),

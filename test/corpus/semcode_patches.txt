@@ -609,11 +609,54 @@ powershell.exe --EncodedCommand=$payload
 --------------------------------------------------------------------------------
 
 ================================================================================
-A one-dash value ends at a colon; the evaluated argument is no clean parameter (semcode)
-:error
+A one-dash value ends at a colon; the evaluated argument is a node of its own (semcode)
 ================================================================================
 
 cmd -x=a:$y
+git -x=a:@y
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          command_name: (command_name)
+          command_elements: (command_elements
+            (command_argument_sep)
+            (command_parameter)
+            (command_argument_sep)
+            (array_literal_expression
+              (unary_expression
+                (variable)))))))
+    (pipeline
+      (pipeline_chain
+        (command
+          command_name: (command_name)
+          command_elements: (command_elements
+            (command_argument_sep)
+            (command_parameter)
+            (command_argument_sep)
+            (array_literal_expression
+              (unary_expression
+                (variable)))))))))
+
+================================================================================
+A backtick escape in a two-dash word is no clean parameter (semcode)
+:error
+================================================================================
+
+git --a`n
+
+--------------------------------------------------------------------------------
+
+================================================================================
+A comma ends a two-dash attached value (semcode)
+:error
+================================================================================
+
+cmd --x=a,@y
 
 --------------------------------------------------------------------------------
 
