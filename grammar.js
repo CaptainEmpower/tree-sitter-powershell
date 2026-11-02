@@ -343,15 +343,22 @@ export default grammar({
             // cannot expand. An expanding form is no single leaf: the name and
             // `=` lex here and what follows parses as an argument of its own
             // (or as an error), with its variables visible.
-            /--?[a-zA-Z_][a-zA-Z0-9_\-]*=([^\s"'`$;|&(){}]|"[^"$`\r\n]*"|'[^'\r\n]*')*/,
+            // The unquoted characters are an allow-list of inert printable
+            // ASCII: PowerShell also reads the Unicode blanks (NBSP, NEL,
+            // U+2000-U+200A, U+2028, U+3000, ...) as whitespace and the
+            // Unicode quotes as quotes, and a deny-list misses some. A quoted
+            // part ends at any quote PowerShell closes it with (U+2018-U+201B
+            // for single, U+201C-U+201E for double quotes).
+            /--?[a-zA-Z_][a-zA-Z0-9_\-]*=([!#%*+,\-./0-9:<=>?@A-Z\[\\\]^_a-z~]|"[^"\u201C-\u201E$`\r\n]*"|'[^'\u2018-\u201B\r\n]*')*/,
             // `-x=$y`: one dash and no quote is a parameter token in
             // PowerShell (tokenizer ScanParameter), `$` included, never expanded.
-            // ScanParameter also ends the parameter at `,` `.` `[` (what follows
-            // is a new, expanding argument) and at `:` (what follows is the
-            // parameter's evaluated argument); any quote, the Unicode ones
-            // U+2018-U+201E included, makes the whole word an expandable
-            // argument. None of those is part of this token.
-            /-[a-zA-Z_][a-zA-Z0-9_\-]*=[^\s"'`;|&(){},.\[:‘-„]*/,
+            // ScanParameter also ends the parameter at whitespace (the Unicode
+            // blanks included), at `,` `.` `[` (what follows is a new,
+            // expanding argument) and at `:` (what follows is the parameter's
+            // evaluated argument); any quote, the Unicode ones included, makes
+            // the whole word an expandable argument. So the value is the same
+            // allow-list of inert ASCII, with `$` and without `,` `.` `[` `:`.
+            /-[a-zA-Z_][a-zA-Z0-9_\-]*=[!#$%*+\-/0-9<=>?@A-Z\\\]^_a-z~]*/,
           ),
         ),
         // A bare `--` or `-` argument (see scanner.c).

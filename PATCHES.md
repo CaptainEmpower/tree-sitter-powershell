@@ -101,6 +101,17 @@ Windows modules that fail to parse).
    `cmd -x=a.$y` would otherwise have hidden `$y` in one clean leaf; found
    in re-review of semcode#261). A literal value that runs on past such a
    character (`cmd -x=$y.z`) now parses with an error too.
+   The unquoted characters of both alternatives are an allow-list of inert
+   printable ASCII rather than a deny-list: PowerShell also reads the
+   Unicode blanks (NBSP, NEL, U+2000-U+200A, U+2028, U+2029, U+3000, ...)
+   as whitespace, so `cmd -x=a<NBSP>$y` passes `$y` as an evaluated
+   argument of its own, and a deny-list built on `\s` let it into the leaf.
+   A quoted part also ends at every quote PowerShell closes it with
+   (U+2018-U+201B for single quotes, U+201C-U+201E for double quotes), so
+   `--pretty='a’$(whoami)‘'` is no single inert part. A value with any
+   non-ASCII character outside quotes (`--title=café`) now parses with an
+   error, which a consumer reports as unparsed; none of the 309 Ansible
+   modules semcode measures changes its tree.
    `--format=%H`, `--pretty='format:%B'` and `--pretty=format:"%h %s"`
    are unchanged. Tested by `test/corpus/semcode_patches.txt` and by
    `attached_value_tests.rs` in semcode's
