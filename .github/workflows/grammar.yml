@@ -1,0 +1,52 @@
+name: Grammar
+
+# The parser in src/ is generated from grammar.js (PATCHES.md). Same steps as
+# `just check`: regenerate with the pinned CLI, run the corpus, and fail if
+# the committed parser differs from what grammar.js generates; then build the
+# Rust binding as semcode consumes it, and run upstream's eslint.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  grammar:
+    name: Generate, corpus, drift
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+      - name: Regenerate the parser
+        run: npx --yes tree-sitter-cli@0.25.10 generate
+      - name: Run the corpus
+        run: npx --yes tree-sitter-cli@0.25.10 test
+      - name: Committed parser matches grammar.js
+        run: git diff --exit-code -- src
+
+  rust:
+    name: cargo test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: Build and test the binding
+        run: cargo test --locked
+
+  lint:
+    name: eslint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --legacy-peer-deps
+      - run: npm run lint

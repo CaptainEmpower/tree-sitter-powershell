@@ -3,6 +3,10 @@ fn main() {
 
     let mut c_config = cc::Build::new();
     c_config.std("c11").include(src_dir);
+    // The external scanner is stateless, so its create/destroy/serialize
+    // hooks leave their parameters unused by design; cc's -Wextra would
+    // print one warning per parameter on every build. (semcode)
+    c_config.flag_if_supported("-Wno-unused-parameter");
 
     #[cfg(target_env = "msvc")]
     c_config.flag("-utf-8");
@@ -37,20 +41,18 @@ fn main() {
 
     c_config.compile("tree-sitter-powershell");
 
-    println!("cargo:rustc-check-cfg=cfg(with_highlights_query)");
-    if !"queries/highlights.scm".is_empty() && std::path::Path::new("queries/highlights.scm").exists() {
-        println!("cargo:rustc-cfg=with_highlights_query");
-    }
-    println!("cargo:rustc-check-cfg=cfg(with_injections_query)");
-    if !"queries/injections.scm".is_empty() && std::path::Path::new("queries/injections.scm").exists() {
-        println!("cargo:rustc-cfg=with_injections_query");
-    }
-    println!("cargo:rustc-check-cfg=cfg(with_locals_query)");
-    if !"queries/locals.scm".is_empty() && std::path::Path::new("queries/locals.scm").exists() {
-        println!("cargo:rustc-cfg=with_locals_query");
-    }
-    println!("cargo:rustc-check-cfg=cfg(with_tags_query)");
-    if !"queries/tags.scm".is_empty() && std::path::Path::new("queries/tags.scm").exists() {
-        println!("cargo:rustc-cfg=with_tags_query");
+    // One cfg per query file the crate ships, so lib.rs exports only those.
+    // (semcode: the generator's template tested each literal path with
+    // `!"…".is_empty()`, which clippy's `const_is_empty` rejects.)
+    for (cfg, query) in [
+        ("with_highlights_query", "queries/highlights.scm"),
+        ("with_injections_query", "queries/injections.scm"),
+        ("with_locals_query", "queries/locals.scm"),
+        ("with_tags_query", "queries/tags.scm"),
+    ] {
+        println!("cargo:rustc-check-cfg=cfg({cfg})");
+        if std::path::Path::new(query).exists() {
+            println!("cargo:rustc-cfg={cfg}");
+        }
     }
 }

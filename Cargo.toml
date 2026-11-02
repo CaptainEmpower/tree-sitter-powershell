@@ -1,15 +1,22 @@
 [package]
 name = "tree-sitter-powershell"
-description = "A Powershell grammar for tree-sitter"
-version = "0.26.6"
+description = "A Powershell grammar for tree-sitter (CaptainEmpower fork of 0.26.6 with the patches in PATCHES.md)"
+# Upstream 0.26.6 plus the patches listed in PATCHES.md. The build metadata
+# (`+semcode.N`) says so without claiming an upstream release number; bump N
+# with every patch. Cargo ignores build metadata when matching requirements.
+version = "0.26.6+semcode.1"
 authors = ["Airbus CERT <cert@airbus.com>"]
 license = "MIT"
 readme = "README.md"
 keywords = ["incremental", "parsing", "tree-sitter", "powershell"]
 categories = ["parser-implementations", "parsing", "text-editors"]
-repository = "https://github.com/airbus-cert/tree-sitter-powershell"
+repository = "https://github.com/CaptainEmpower/tree-sitter-powershell"
 edition = "2021"
 autoexamples = false
+# Consumed as a git dependency pinned by commit, never through crates.io:
+# the crate name belongs to upstream there, and the tag-triggered publish
+# workflows inherited from upstream must not push this fork under it.
+publish = false
 
 build = "bindings/rust/build.rs"
 include = [
@@ -19,6 +26,7 @@ include = [
   "src/*",
   "tree-sitter.json",
   "/LICENSE",
+  "/PATCHES.md",
 ]
 
 [lib]

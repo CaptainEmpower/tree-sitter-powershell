@@ -114,12 +114,12 @@
                 "type": "CHOICE",
                 "members": [
                   {
-                    "type": "STRING",
-                    "value": "l"
+                    "type": "PATTERN",
+                    "value": "[lL]"
                   },
                   {
-                    "type": "STRING",
-                    "value": "d"
+                    "type": "PATTERN",
+                    "value": "[dD]"
                   }
                 ]
               },
@@ -132,29 +132,8 @@
             "type": "CHOICE",
             "members": [
               {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "kb"
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "mb"
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "gb"
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "tb"
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "pb"
-                  }
-                ]
+                "type": "PATTERN",
+                "value": "[kKmMgGtTpP][bB]"
               },
               {
                 "type": "BLANK"
@@ -170,8 +149,8 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "STRING",
-            "value": "0x"
+            "type": "PATTERN",
+            "value": "0[xX]"
           },
           {
             "type": "PATTERN",
@@ -181,8 +160,8 @@
             "type": "CHOICE",
             "members": [
               {
-                "type": "STRING",
-                "value": "l"
+                "type": "PATTERN",
+                "value": "[lL]"
               },
               {
                 "type": "BLANK"
@@ -193,29 +172,8 @@
             "type": "CHOICE",
             "members": [
               {
-                "type": "CHOICE",
-                "members": [
-                  {
-                    "type": "STRING",
-                    "value": "kb"
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "mb"
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "gb"
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "tb"
-                  },
-                  {
-                    "type": "STRING",
-                    "value": "pb"
-                  }
-                ]
+                "type": "PATTERN",
+                "value": "[kKmMgGtTpP][bB]"
               },
               {
                 "type": "BLANK"
@@ -241,41 +199,8 @@
                 "type": "CHOICE",
                 "members": [
                   {
-                    "type": "TOKEN",
-                    "content": {
-                      "type": "SEQ",
-                      "members": [
-                        {
-                          "type": "STRING",
-                          "value": "e"
-                        },
-                        {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "STRING",
-                                  "value": "+"
-                                },
-                                {
-                                  "type": "STRING",
-                                  "value": "-"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "BLANK"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "[0-9]+"
-                        }
-                      ]
-                    }
+                    "type": "PATTERN",
+                    "value": "[eE][+-]?[0-9]+"
                   },
                   {
                     "type": "BLANK"
@@ -286,29 +211,20 @@
                 "type": "CHOICE",
                 "members": [
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "STRING",
-                        "value": "kb"
-                      },
-                      {
-                        "type": "STRING",
-                        "value": "mb"
-                      },
-                      {
-                        "type": "STRING",
-                        "value": "gb"
-                      },
-                      {
-                        "type": "STRING",
-                        "value": "tb"
-                      },
-                      {
-                        "type": "STRING",
-                        "value": "pb"
-                      }
-                    ]
+                    "type": "PATTERN",
+                    "value": "[dD]"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "PATTERN",
+                    "value": "[kKmMgGtTpP][bB]"
                   },
                   {
                     "type": "BLANK"
@@ -328,41 +244,8 @@
                 "type": "CHOICE",
                 "members": [
                   {
-                    "type": "TOKEN",
-                    "content": {
-                      "type": "SEQ",
-                      "members": [
-                        {
-                          "type": "STRING",
-                          "value": "e"
-                        },
-                        {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "CHOICE",
-                              "members": [
-                                {
-                                  "type": "STRING",
-                                  "value": "+"
-                                },
-                                {
-                                  "type": "STRING",
-                                  "value": "-"
-                                }
-                              ]
-                            },
-                            {
-                              "type": "BLANK"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "PATTERN",
-                          "value": "[0-9]+"
-                        }
-                      ]
-                    }
+                    "type": "PATTERN",
+                    "value": "[eE][+-]?[0-9]+"
                   },
                   {
                     "type": "BLANK"
@@ -373,29 +256,20 @@
                 "type": "CHOICE",
                 "members": [
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "STRING",
-                        "value": "kb"
-                      },
-                      {
-                        "type": "STRING",
-                        "value": "mb"
-                      },
-                      {
-                        "type": "STRING",
-                        "value": "gb"
-                      },
-                      {
-                        "type": "STRING",
-                        "value": "tb"
-                      },
-                      {
-                        "type": "STRING",
-                        "value": "pb"
-                      }
-                    ]
+                    "type": "PATTERN",
+                    "value": "[dD]"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "PATTERN",
+                    "value": "[kKmMgGtTpP][bB]"
                   },
                   {
                     "type": "BLANK"
@@ -412,69 +286,27 @@
                 "value": "[0-9]+"
               },
               {
-                "type": "TOKEN",
-                "content": {
-                  "type": "SEQ",
-                  "members": [
-                    {
-                      "type": "STRING",
-                      "value": "e"
-                    },
-                    {
-                      "type": "CHOICE",
-                      "members": [
-                        {
-                          "type": "CHOICE",
-                          "members": [
-                            {
-                              "type": "STRING",
-                              "value": "+"
-                            },
-                            {
-                              "type": "STRING",
-                              "value": "-"
-                            }
-                          ]
-                        },
-                        {
-                          "type": "BLANK"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "PATTERN",
-                      "value": "[0-9]+"
-                    }
-                  ]
-                }
+                "type": "PATTERN",
+                "value": "[eE][+-]?[0-9]+"
               },
               {
                 "type": "CHOICE",
                 "members": [
                   {
-                    "type": "CHOICE",
-                    "members": [
-                      {
-                        "type": "STRING",
-                        "value": "kb"
-                      },
-                      {
-                        "type": "STRING",
-                        "value": "mb"
-                      },
-                      {
-                        "type": "STRING",
-                        "value": "gb"
-                      },
-                      {
-                        "type": "STRING",
-                        "value": "tb"
-                      },
-                      {
-                        "type": "STRING",
-                        "value": "pb"
-                      }
-                    ]
+                    "type": "PATTERN",
+                    "value": "[dD]"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "PATTERN",
+                    "value": "[kKmMgGtTpP][bB]"
                   },
                   {
                     "type": "BLANK"
@@ -725,7 +557,7 @@
     },
     "type_identifier": {
       "type": "PATTERN",
-      "value": "[a-zA-Z0-9_]+"
+      "value": "[a-zA-Z0-9_]+(`[0-9]+)?"
     },
     "type_name": {
       "type": "CHOICE",
@@ -742,8 +574,17 @@
               "name": "type_name"
             },
             {
-              "type": "STRING",
-              "value": "."
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "."
+                },
+                {
+                  "type": "STRING",
+                  "value": "+"
+                }
+              ]
             },
             {
               "type": "SYMBOL",
@@ -1891,11 +1732,23 @@
             "members": [
               {
                 "type": "PATTERN",
-                "value": "-+[a-zA-Z_?\\-`][a-zA-Z0-9_?\\-`]*"
+                "value": "-[a-zA-Z_?][a-zA-Z0-9_?\\-`]*"
               },
               {
                 "type": "PATTERN",
-                "value": "--?[a-zA-Z_][a-zA-Z0-9_\\-]*=([^\\s\"'`;|&(){}]|\"[^\"\\r\\n]*\"|'[^'\\r\\n]*')*"
+                "value": "--+[a-zA-Z_?][a-zA-Z0-9_?\\-]*"
+              },
+              {
+                "type": "PATTERN",
+                "value": "--[a-zA-Z_][a-zA-Z0-9_\\-]*=([!#%*+\\-./0-9:<=>?@A-Z\\[\\\\\\]^_a-z~]|\"[^\"\\u201C-\\u201E$`\\r\\n]*\"|'[^'\\u2018-\\u201B\\r\\n]*')*"
+              },
+              {
+                "type": "PATTERN",
+                "value": "-[a-zA-Z_][a-zA-Z0-9_\\-]*=[!#$%*+\\-/0-9<=>?@A-Z\\\\\\]^_a-z~]*"
+              },
+              {
+                "type": "PATTERN",
+                "value": "-[a-zA-Z_][a-zA-Z0-9_\\-]*=[!#%*+\\-/0-9<=>?@A-Z\\\\\\]^_a-z~]*(\"[^\"\\u201C-\\u201E$`\\r\\n]*\"|'[^'\\u2018-\\u201B\\r\\n]*')([!#%*+\\-./0-9:<=>?@A-Z\\[\\\\\\]^_a-z~]|\"[^\"\\u201C-\\u201E$`\\r\\n]*\"|'[^'\\u2018-\\u201B\\r\\n]*')*"
               }
             ]
           }
@@ -3442,6 +3295,10 @@
         {
           "type": "SYMBOL",
           "name": "label"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "simple_name"
         },
         {
           "type": "SYMBOL",
@@ -6392,7 +6249,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "type_spec"
+          "name": "_generic_type_argument"
         },
         {
           "type": "REPEAT",
@@ -6405,10 +6262,36 @@
               },
               {
                 "type": "SYMBOL",
-                "name": "type_spec"
+                "name": "_generic_type_argument"
               }
             ]
           }
+        }
+      ]
+    },
+    "_generic_type_argument": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "type_spec"
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "["
+            },
+            {
+              "type": "SYMBOL",
+              "name": "type_spec"
+            },
+            {
+              "type": "STRING",
+              "value": "]"
+            }
+          ]
         }
       ]
     },
