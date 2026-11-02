@@ -25,12 +25,13 @@ bool tree_sitter_powershell_external_scanner_scan(void *payload, TSLexer *lexer,
 
 static void skip(TSLexer *lexer) { lexer->advance(lexer, true); }
 
+// semcode patch (terminator end): the caller marks the token's end, where
+// the scan started, before any blank either scan skips.
 static bool scan_statement_terminator(void *payload, TSLexer *lexer, const bool *valid_symbols)
 {
     if (valid_symbols[STATEMENT_TERMINATOR]) {
         lexer->result_symbol = STATEMENT_TERMINATOR;
         // This token has no characters -- everything is lookahead to determine its existence
-        lexer->mark_end(lexer);
 
         for (;;) {
             if (lexer->lookahead == 0) return true;
@@ -38,6 +39,8 @@ static bool scan_statement_terminator(void *payload, TSLexer *lexer, const bool 
             if (lexer->lookahead == ';') return true;
             if (lexer->lookahead == ')') return true;
             if (lexer->lookahead == '\n') return true;
+            // semcode patch (#258): PowerShell ends a line at a lone CR too
+            if (lexer->lookahead == '\r') return true;
             if (!iswspace(lexer->lookahead)) return false;
             skip(lexer);
         }
@@ -52,12 +55,10 @@ static bool scan_statement_terminator(void *payload, TSLexer *lexer, const bool 
 // so the lexer cannot tell them apart by length or precedence: the token is
 // recognised only when the dashes are followed by whitespace or the end of the
 // command.
+// semcode patch (terminator end): called with the lookahead on the first
+// dash, after the caller skipped the blanks before it.
 static bool scan_bare_dashes(void *payload, TSLexer *lexer, const bool *valid_symbols)
 {
-    if (!valid_symbols[BARE_DASHES]) return false;
-
-    while (lexer->lookahead == ' ' || lexer->lookahead == '\t') skip(lexer);
-    if (lexer->lookahead != '-') return false;
     lexer->advance(lexer, false);
     if (lexer->lookahead == '-') lexer->advance(lexer, false);
     lexer->mark_end(lexer);
@@ -66,6 +67,9 @@ static bool scan_bare_dashes(void *payload, TSLexer *lexer, const bool *valid_sy
         case 0:
         case ' ':
         case '\t':
+        // semcode patch (terminator end): PowerShell's other blanks
+        case '\f':
+        case '\v':
         case '\r':
         case '\n':
         case ';':
@@ -84,9 +88,21 @@ static bool scan_bare_dashes(void *payload, TSLexer *lexer, const bool *valid_sy
 
 bool tree_sitter_powershell_external_scanner_scan(void *payload, TSLexer *lexer, const bool *valid_symbols)
 {
+    // semcode patch (terminator end): the zero-width terminator ends where the
+    // scan starts, so it is marked before the bare-dash scan skips any blank;
+    // otherwise a statement would end after the blanks that follow it. A
+    // successful bare-dash scan marks its own end past the dashes.
+    if (valid_symbols[STATEMENT_TERMINATOR]) lexer->mark_end(lexer);
+
     // The statement terminator consumes nothing, so it must be tried last: when
     // both are valid, a `--` has to win over the empty terminator.
-    if (scan_bare_dashes(payload, lexer, valid_symbols)) return true;
+    if (valid_symbols[BARE_DASHES]) {
+        while (lexer->lookahead == ' ' || lexer->lookahead == '\t') skip(lexer);
+        // A dash is no blank, so no terminator follows here either: a dash
+        // that is not a bare-dash argument is left to the parser's lexer,
+        // never dropped behind a terminator.
+        if (lexer->lookahead == '-') return scan_bare_dashes(payload, lexer, valid_symbols);
+    }
     return scan_statement_terminator(payload, lexer, valid_symbols);
 }
 

@@ -1,0 +1,618 @@
+================================================================================
+Generic type with backtick arity (semcode #254)
+================================================================================
+
+[System.Collections.Generic.List`1[String]]@()
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (logical_expression
+          (bitwise_expression
+            (comparison_expression
+              (additive_expression
+                (multiplicative_expression
+                  (format_expression
+                    (range_expression
+                      (array_literal_expression
+                        (unary_expression
+                          (expression_with_unary_operator
+                            (cast_expression
+                              (type_literal
+                                (type_spec
+                                  (generic_type_name
+                                    (type_name
+                                      (type_name
+                                        (type_name
+                                          (type_name
+                                            (type_identifier))
+                                          (type_identifier))
+                                        (type_identifier))
+                                      (type_identifier)))
+                                  (generic_type_arguments
+                                    (type_spec
+                                      (type_name
+                                        (type_identifier))))))
+                              (unary_expression
+                                (array_expression)))))))))))))))))
+
+================================================================================
+Generic type with bracketed type arguments (semcode #254)
+================================================================================
+
+$d = [System.Collections.Generic.Dictionary[[String], [Object]]]@{}
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (logical_expression
+            (bitwise_expression
+              (comparison_expression
+                (additive_expression
+                  (multiplicative_expression
+                    (format_expression
+                      (range_expression
+                        (array_literal_expression
+                          (unary_expression
+                            (variable)))))))))))
+        (assignement_operator)
+        (pipeline
+          (pipeline_chain
+            (logical_expression
+              (bitwise_expression
+                (comparison_expression
+                  (additive_expression
+                    (multiplicative_expression
+                      (format_expression
+                        (range_expression
+                          (array_literal_expression
+                            (unary_expression
+                              (expression_with_unary_operator
+                                (cast_expression
+                                  (type_literal
+                                    (type_spec
+                                      (generic_type_name
+                                        (type_name
+                                          (type_name
+                                            (type_name
+                                              (type_name
+                                                (type_identifier))
+                                              (type_identifier))
+                                            (type_identifier))
+                                          (type_identifier)))
+                                      (generic_type_arguments
+                                        (type_spec
+                                          (type_name
+                                            (type_identifier)))
+                                        (type_spec
+                                          (type_name
+                                            (type_identifier))))))
+                                  (unary_expression
+                                    (hash_literal_expression)))))))))))))))))))
+
+================================================================================
+Bracketed generic arguments cast a script block (semcode #254)
+================================================================================
+
+[Func[[Object], [UInt32]]] { 1 }
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (logical_expression
+          (bitwise_expression
+            (comparison_expression
+              (additive_expression
+                (multiplicative_expression
+                  (format_expression
+                    (range_expression
+                      (array_literal_expression
+                        (unary_expression
+                          (expression_with_unary_operator
+                            (cast_expression
+                              (type_literal
+                                (type_spec
+                                  (generic_type_name
+                                    (type_name
+                                      (type_identifier)))
+                                  (generic_type_arguments
+                                    (type_spec
+                                      (type_name
+                                        (type_identifier)))
+                                    (type_spec
+                                      (type_name
+                                        (type_identifier))))))
+                              (unary_expression
+                                (script_block_expression
+                                  (script_block
+                                    (script_block_body
+                                      (statement_list
+                                        (pipeline
+                                          (pipeline_chain
+                                            (logical_expression
+                                              (bitwise_expression
+                                                (comparison_expression
+                                                  (additive_expression
+                                                    (multiplicative_expression
+                                                      (format_expression
+                                                        (range_expression
+                                                          (array_literal_expression
+                                                            (unary_expression
+                                                              (integer_literal
+                                                                (decimal_integer_literal)))))))))))))))))))))))))))))))))
+
+================================================================================
+Nested type name with plus (semcode #256)
+================================================================================
+
+[System.Net.WebRequestMethods+Ftp]::GetDateTimestamp
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (logical_expression
+          (bitwise_expression
+            (comparison_expression
+              (additive_expression
+                (multiplicative_expression
+                  (format_expression
+                    (range_expression
+                      (array_literal_expression
+                        (unary_expression
+                          (member_access
+                            (type_literal
+                              (type_spec
+                                (type_name
+                                  (type_name
+                                    (type_name
+                                      (type_name
+                                        (type_identifier))
+                                      (type_identifier))
+                                    (type_identifier))
+                                  (type_identifier))))
+                            (member_name
+                              (simple_name))))))))))))))))
+
+================================================================================
+Nested type name in a pipeline (semcode #256)
+================================================================================
+
+[Environment+SpecialFolder]::MyDocuments | ForEach-Object { $_ }
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (logical_expression
+          (bitwise_expression
+            (comparison_expression
+              (additive_expression
+                (multiplicative_expression
+                  (format_expression
+                    (range_expression
+                      (array_literal_expression
+                        (unary_expression
+                          (member_access
+                            (type_literal
+                              (type_spec
+                                (type_name
+                                  (type_name
+                                    (type_identifier))
+                                  (type_identifier))))
+                            (member_name
+                              (simple_name))))))))))))
+        (command
+          (command_name)
+          (command_elements
+            (command_argument_sep)
+            (array_literal_expression
+              (unary_expression
+                (script_block_expression
+                  (script_block
+                    (script_block_body
+                      (statement_list
+                        (pipeline
+                          (pipeline_chain
+                            (logical_expression
+                              (bitwise_expression
+                                (comparison_expression
+                                  (additive_expression
+                                    (multiplicative_expression
+                                      (format_expression
+                                        (range_expression
+                                          (array_literal_expression
+                                            (unary_expression
+                                              (variable))))))))))))))))))))))))
+
+================================================================================
+Upper-case numeric multipliers (semcode #257)
+================================================================================
+
+$s = $n * 1GB
+$t = 2 * 1MB
+$u = 1KB
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (logical_expression
+            (bitwise_expression
+              (comparison_expression
+                (additive_expression
+                  (multiplicative_expression
+                    (format_expression
+                      (range_expression
+                        (array_literal_expression
+                          (unary_expression
+                            (variable)))))))))))
+        (assignement_operator)
+        (pipeline
+          (pipeline_chain
+            (logical_expression
+              (bitwise_expression
+                (comparison_expression
+                  (additive_expression
+                    (multiplicative_expression
+                      (multiplicative_expression
+                        (format_expression
+                          (range_expression
+                            (array_literal_expression
+                              (unary_expression
+                                (variable))))))
+                      (format_expression
+                        (range_expression
+                          (array_literal_expression
+                            (unary_expression
+                              (integer_literal
+                                (decimal_integer_literal)))))))))))))))
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (logical_expression
+            (bitwise_expression
+              (comparison_expression
+                (additive_expression
+                  (multiplicative_expression
+                    (format_expression
+                      (range_expression
+                        (array_literal_expression
+                          (unary_expression
+                            (variable)))))))))))
+        (assignement_operator)
+        (pipeline
+          (pipeline_chain
+            (logical_expression
+              (bitwise_expression
+                (comparison_expression
+                  (additive_expression
+                    (multiplicative_expression
+                      (multiplicative_expression
+                        (format_expression
+                          (range_expression
+                            (array_literal_expression
+                              (unary_expression
+                                (integer_literal
+                                  (decimal_integer_literal)))))))
+                      (format_expression
+                        (range_expression
+                          (array_literal_expression
+                            (unary_expression
+                              (integer_literal
+                                (decimal_integer_literal)))))))))))))))
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (logical_expression
+            (bitwise_expression
+              (comparison_expression
+                (additive_expression
+                  (multiplicative_expression
+                    (format_expression
+                      (range_expression
+                        (array_literal_expression
+                          (unary_expression
+                            (variable)))))))))))
+        (assignement_operator)
+        (pipeline
+          (pipeline_chain
+            (logical_expression
+              (bitwise_expression
+                (comparison_expression
+                  (additive_expression
+                    (multiplicative_expression
+                      (format_expression
+                        (range_expression
+                          (array_literal_expression
+                            (unary_expression
+                              (integer_literal
+                                (decimal_integer_literal)))))))))))))))))
+
+================================================================================
+Upper-case type suffixes, hex prefix and exponent (semcode #257)
+================================================================================
+
+$a = 10L
+$b = 1D
+$c = 0XFFL
+$d = 1.5D
+$e = 1E5
+$f = 2.5Gb
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (logical_expression
+            (bitwise_expression
+              (comparison_expression
+                (additive_expression
+                  (multiplicative_expression
+                    (format_expression
+                      (range_expression
+                        (array_literal_expression
+                          (unary_expression
+                            (variable)))))))))))
+        (assignement_operator)
+        (pipeline
+          (pipeline_chain
+            (logical_expression
+              (bitwise_expression
+                (comparison_expression
+                  (additive_expression
+                    (multiplicative_expression
+                      (format_expression
+                        (range_expression
+                          (array_literal_expression
+                            (unary_expression
+                              (integer_literal
+                                (decimal_integer_literal)))))))))))))))
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (logical_expression
+            (bitwise_expression
+              (comparison_expression
+                (additive_expression
+                  (multiplicative_expression
+                    (format_expression
+                      (range_expression
+                        (array_literal_expression
+                          (unary_expression
+                            (variable)))))))))))
+        (assignement_operator)
+        (pipeline
+          (pipeline_chain
+            (logical_expression
+              (bitwise_expression
+                (comparison_expression
+                  (additive_expression
+                    (multiplicative_expression
+                      (format_expression
+                        (range_expression
+                          (array_literal_expression
+                            (unary_expression
+                              (integer_literal
+                                (decimal_integer_literal)))))))))))))))
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (logical_expression
+            (bitwise_expression
+              (comparison_expression
+                (additive_expression
+                  (multiplicative_expression
+                    (format_expression
+                      (range_expression
+                        (array_literal_expression
+                          (unary_expression
+                            (variable)))))))))))
+        (assignement_operator)
+        (pipeline
+          (pipeline_chain
+            (logical_expression
+              (bitwise_expression
+                (comparison_expression
+                  (additive_expression
+                    (multiplicative_expression
+                      (format_expression
+                        (range_expression
+                          (array_literal_expression
+                            (unary_expression
+                              (integer_literal
+                                (hexadecimal_integer_literal)))))))))))))))
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (logical_expression
+            (bitwise_expression
+              (comparison_expression
+                (additive_expression
+                  (multiplicative_expression
+                    (format_expression
+                      (range_expression
+                        (array_literal_expression
+                          (unary_expression
+                            (variable)))))))))))
+        (assignement_operator)
+        (pipeline
+          (pipeline_chain
+            (logical_expression
+              (bitwise_expression
+                (comparison_expression
+                  (additive_expression
+                    (multiplicative_expression
+                      (format_expression
+                        (range_expression
+                          (array_literal_expression
+                            (unary_expression
+                              (real_literal))))))))))))))
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (logical_expression
+            (bitwise_expression
+              (comparison_expression
+                (additive_expression
+                  (multiplicative_expression
+                    (format_expression
+                      (range_expression
+                        (array_literal_expression
+                          (unary_expression
+                            (variable)))))))))))
+        (assignement_operator)
+        (pipeline
+          (pipeline_chain
+            (logical_expression
+              (bitwise_expression
+                (comparison_expression
+                  (additive_expression
+                    (multiplicative_expression
+                      (format_expression
+                        (range_expression
+                          (array_literal_expression
+                            (unary_expression
+                              (real_literal))))))))))))))
+    (pipeline
+      (assignment_expression
+        (left_assignment_expression
+          (logical_expression
+            (bitwise_expression
+              (comparison_expression
+                (additive_expression
+                  (multiplicative_expression
+                    (format_expression
+                      (range_expression
+                        (array_literal_expression
+                          (unary_expression
+                            (variable)))))))))))
+        (assignement_operator)
+        (pipeline
+          (pipeline_chain
+            (logical_expression
+              (bitwise_expression
+                (comparison_expression
+                  (additive_expression
+                    (multiplicative_expression
+                      (format_expression
+                        (range_expression
+                          (array_literal_expression
+                            (unary_expression
+                              (real_literal))))))))))))))))
+
+================================================================================
+Break and continue with a bare label name (semcode #258)
+================================================================================
+
+:regLoop foreach ($k in $keys) {
+  if ($k) { continue regLoop }
+  break regLoop
+}
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (label)
+    (foreach_statement
+      (variable)
+      (pipeline
+        (pipeline_chain
+          (logical_expression
+            (bitwise_expression
+              (comparison_expression
+                (additive_expression
+                  (multiplicative_expression
+                    (format_expression
+                      (range_expression
+                        (array_literal_expression
+                          (unary_expression
+                            (variable))))))))))))
+      (statement_block
+        (statement_list
+          (if_statement
+            (pipeline
+              (pipeline_chain
+                (logical_expression
+                  (bitwise_expression
+                    (comparison_expression
+                      (additive_expression
+                        (multiplicative_expression
+                          (format_expression
+                            (range_expression
+                              (array_literal_expression
+                                (unary_expression
+                                  (variable))))))))))))
+            (statement_block
+              (statement_list
+                (flow_control_statement
+                  (label_expression
+                    (simple_name))))))
+          (flow_control_statement
+            (label_expression
+              (simple_name))))))))
+
+================================================================================
+Attached option values that cannot expand stay one parameter (semcode)
+================================================================================
+
+powershell -c=$x
+cmd --x='$x'
+
+--------------------------------------------------------------------------------
+
+(program
+  (statement_list
+    (pipeline
+      (pipeline_chain
+        (command
+          command_name: (command_name)
+          command_elements: (command_elements
+            (command_argument_sep)
+            (command_parameter)))))
+    (pipeline
+      (pipeline_chain
+        (command
+          command_name: (command_name)
+          command_elements: (command_elements
+            (command_argument_sep)
+            (command_parameter)))))))
+
+================================================================================
+An attached value with a variable is no clean parameter (semcode)
+:error
+================================================================================
+
+powershell.exe --EncodedCommand=$payload
+
+--------------------------------------------------------------------------------
+
+================================================================================
+An attached value with a subexpression is no clean parameter (semcode)
+:error
+================================================================================
+
+Invoke-Expression -Command="$(Get-Secret)"
+
+--------------------------------------------------------------------------------

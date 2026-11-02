@@ -7,6 +7,13 @@ const PREC = {
   PARAM: 6,
 };
 
+// Numeric literal pieces (PowerShell language spec 2.3.5.1), case-insensitive.
+// (semcode patch, #257)
+const NUMERIC_LONG_SUFFIX = /[lL]/;
+const NUMERIC_DECIMAL_SUFFIX = /[dD]/;
+const NUMERIC_MULTIPLIER = /[kKmMgGtTpP][bB]/;
+const NUMERIC_EXPONENT = /[eE][+-]?[0-9]+/;
+
 export default grammar({
   name: 'powershell',
 
@@ -48,22 +55,24 @@ export default grammar({
     integer_literal: ($) =>
       choice($.decimal_integer_literal, $.hexadecimal_integer_literal),
 
+    // PowerShell reads numeric prefixes, suffixes and exponents in any case
+    // (`1GB`, `10L`, `0xFF`, `1E5`); see NUMERIC_* above. (semcode patch, #257)
     decimal_integer_literal: ($) =>
       token(
         seq(
           /[0-9]+/,
-          optional(choice('l', 'd')),
-          optional(choice('kb', 'mb', 'gb', 'tb', 'pb')),
+          optional(choice(NUMERIC_LONG_SUFFIX, NUMERIC_DECIMAL_SUFFIX)),
+          optional(NUMERIC_MULTIPLIER),
         ),
       ),
 
     hexadecimal_integer_literal: ($) =>
       token(
         seq(
-          '0x',
+          /0[xX]/,
           /[0-9a-fA-F]+/,
-          optional('l'),
-          optional(choice('kb', 'mb', 'gb', 'tb', 'pb')),
+          optional(NUMERIC_LONG_SUFFIX),
+          optional(NUMERIC_MULTIPLIER),
         ),
       ),
 
@@ -73,18 +82,21 @@ export default grammar({
         choice(
           seq(
             /[0-9]+\.[0-9]+/,
-            optional(token(seq('e', optional(choice('+', '-')), /[0-9]+/))),
-            optional(choice('kb', 'mb', 'gb', 'tb', 'pb')),
+            optional(NUMERIC_EXPONENT),
+            optional(NUMERIC_DECIMAL_SUFFIX),
+            optional(NUMERIC_MULTIPLIER),
           ),
           seq(
             /\.[0-9]+/,
-            optional(token(seq('e', optional(choice('+', '-')), /[0-9]+/))),
-            optional(choice('kb', 'mb', 'gb', 'tb', 'pb')),
+            optional(NUMERIC_EXPONENT),
+            optional(NUMERIC_DECIMAL_SUFFIX),
+            optional(NUMERIC_MULTIPLIER),
           ),
           seq(
             /[0-9]+/,
-            token(seq('e', optional(choice('+', '-')), /[0-9]+/)),
-            optional(choice('kb', 'mb', 'gb', 'tb', 'pb')),
+            NUMERIC_EXPONENT,
+            optional(NUMERIC_DECIMAL_SUFFIX),
+            optional(NUMERIC_MULTIPLIER),
           ),
         ),
       ),
@@ -149,10 +161,17 @@ export default grammar({
     simple_name: ($) => /[a-zA-Z_][a-zA-Z0-9_]*/,
 
     // Type names
-    type_identifier: ($) => /[a-zA-Z0-9_]+/,
+    // A generic type's CLR name carries its arity after a backtick:
+    // List`1, Dictionary`2. (semcode patch, #254)
+    type_identifier: ($) => /[a-zA-Z0-9_]+(`[0-9]+)?/,
 
+    // `+` separates a nested type from its declaring type:
+    // [Environment+SpecialFolder]. (semcode patch, #256)
     type_name: ($) =>
-      choice($.type_identifier, seq($.type_name, '.', $.type_identifier)),
+      choice(
+        $.type_identifier,
+        seq($.type_name, choice('.', '+'), $.type_identifier),
+      ),
 
     array_type_name: ($) => seq($.type_name, '['),
     generic_type_name: ($) => seq($.type_name, '['),
@@ -318,7 +337,16 @@ export default grammar({
             // `-Name`, `-Name1`, `--long-flag`, `-A5`
             /-+[a-zA-Z_?\-`][a-zA-Z0-9_?\-`]*/,
             // `--format=%H`, `--pretty=format:"%B"`: a native option with an attached value
-            /--?[a-zA-Z_][a-zA-Z0-9_\-]*=([^\s"'`;|&(){}]|"[^"\r\n]*"|'[^'\r\n]*')*/,
+            // (semcode patch: attached values stay literal) PowerShell expands
+            // `$x`, `${x}`, `$(...)` and backtick escapes in such an argument
+            // (in a double-quoted part too), so the value takes only text that
+            // cannot expand. An expanding form is no single leaf: the name and
+            // `=` lex here and what follows parses as an argument of its own
+            // (or as an error), with its variables visible.
+            /--?[a-zA-Z_][a-zA-Z0-9_\-]*=([^\s"'`$;|&(){}]|"[^"$`\r\n]*"|'[^'\r\n]*')*/,
+            // `-x=$y`: one dash and no quote is a parameter token in
+            // PowerShell (tokenizer ScanParameter), `$` included, never expanded.
+            /-[a-zA-Z_][a-zA-Z0-9_\-]*=[^\s"'`;|&(){}]*/,
           ),
         ),
         // A bare `--` or `-` argument (see scanner.c).
@@ -598,7 +626,9 @@ export default grammar({
 
     label: ($) => token(seq(':', /[a-zA-Z_][a-zA-Z0-9_]*/)),
 
-    label_expression: ($) => choice($.label, $.unary_expression),
+    // `break` and `continue` name their label without the colon:
+    // `break outer`. (semcode patch, #258)
+    label_expression: ($) => choice($.label, $.simple_name, $.unary_expression),
 
     trap_statement: ($) =>
       seq(reservedWord('trap'), optional($.type_literal), $.statement_block),
@@ -1222,8 +1252,13 @@ export default grammar({
 
     dimension: ($) => repeat1(','),
 
+    // Each argument may be bracketed, as in
+    // [Dictionary[[String], [Object]]]. (semcode patch, #254)
     generic_type_arguments: ($) =>
-      seq($.type_spec, repeat(seq(',', $.type_spec))),
+      seq($._generic_type_argument, repeat(seq(',', $._generic_type_argument))),
+
+    _generic_type_argument: ($) =>
+      choice($.type_spec, seq('[', $.type_spec, ']')),
 
     // Attributes
     attribute_list: ($) => repeat1($.attribute),

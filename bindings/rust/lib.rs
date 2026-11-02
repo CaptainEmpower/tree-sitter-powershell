@@ -5,6 +5,7 @@
 //!
 //! ```
 //! let code = r#"
+//! Write-Output "hello"
 //! "#;
 //! let mut parser = tree_sitter::Parser::new();
 //! let language = tree_sitter_powershell::LANGUAGE;
